@@ -1,0 +1,306 @@
+---
+title: "Sincronização do Transporte Coletivo e Desigualdade de Acessibilidade em Brasília"
+subtitle: "Pitch de Apresentação do Projeto"
+author:
+  - name: "Pedro Muniz Cherulli"
+    affiliations: "UniCEUB - Universidade de Brasília"
+  - name: "Sofia de Carvalho Raimundo"
+    affiliations: "UniCEUB - Universidade de Brasília"
+  - name: "Rafael Rosa Alves"
+    affiliations: "UniCEUB - Universidade de Brasília"
+  - name: "Rodrigo Lucas Alves"
+    affiliations: "UniCEUB - Universidade de Brasília"
+date: today
+date-format: long
+---
+
+# O problema
+
+## Brasília: uma cidade que espera o ônibus
+
+::: {.incremental}
+- Cidade planejada, mas **dispersa**: empregos concentrados no Plano Piloto, moradia nas regiões administrativas e no Entorno
+- Deslocamentos longos e dependência do ônibus nas regiões periféricas
+- Quem mora mais longe costuma **esperar mais** e **fazer mais baldeações**
+- O tempo perdido na espera não é distribuído de forma igual
+:::
+
+::: {.notes}
+Abrir com a experiência cotidiana: todo mundo em Brasília já esperou 40 minutos
+e viu três ônibus da mesma linha chegarem juntos. Esse é o fenômeno que vamos estudar.
+:::
+
+## Pergunta de pesquisa
+
+<br>
+
+> Como a dinâmica de **sincronização dos ônibus** e a **forma urbana** de Brasília
+> se combinam para produzir **desigualdades de acessibilidade** entre as regiões do DF?
+
+<br>
+
+::: {.incremental}
+- **Eixo 1:** sincronização (modelo de Kuramoto)
+- **Eixo 2:** forma urbana (Frederico de Holanda e imagens de satélite)
+- **Eixo 3:** dados que tornam isso mensurável
+:::
+
+# Eixo 1 — Sincronização
+
+## Uma intuição antes da matemática
+
+:::: {.columns}
+
+::: {.column width="33%"}
+**Metrônomos**
+
+Vários metrônomos sobre uma mesma tábua móvel acabam batendo juntos
+:::
+
+::: {.column width="33%"}
+**Vaga-lumes**
+
+Em algumas regiões da Ásia, milhares piscam ao mesmo tempo
+:::
+
+::: {.column width="33%"}
+**Plateia**
+
+Aplausos desordenados viram palmas no mesmo ritmo
+:::
+
+::::
+
+<br>
+
+Ninguém coordena: cada um **influencia um pouco os vizinhos**, e a ordem surge sozinha.
+O modelo de Kuramoto descreve matematicamente esse fenômeno [@kuramoto1984; @strogatz2000].
+
+## Ônibus como "osciladores"
+
+::: {.incremental}
+- Uma linha circular é como um **relógio**: o ônibus dá voltas e volta ao início
+- A **fase** ($\theta$) é onde o ônibus está nessa volta, como o ponteiro do relógio
+- Cada ônibus tem seu **ritmo natural** ($\omega$): motorista, veículo, trânsito
+- E eles **se influenciam**: um ônibus atrasado encontra mais gente no ponto, demora mais; o de trás encontra o ponto vazio, anda mais rápido e o alcança
+:::
+
+::: {.notes}
+Esse é o mecanismo central, vale explicar com calma. O atraso se autoalimenta:
+o ônibus da frente fica cada vez mais lento e o de trás cada vez mais rápido,
+até andarem juntos. É exatamente o acoplamento do modelo de Kuramoto.
+:::
+
+## A fórmula {.smaller}
+
+$$
+\frac{d\theta_i}{dt} = \omega_i + \frac{K}{N}\sum_{j=1}^{N}\sin(\theta_j - \theta_i)
+$$
+
+| Termo | Significado | No ônibus |
+|---|---|---|
+| $\frac{d\theta_i}{dt}$ | Velocidade da fase | Quão rápido o ônibus $i$ percorre a rota |
+| $\omega_i$ | Ritmo natural | Velocidade própria, sem influência dos outros |
+| $K$ | Força de acoplamento | Quanto um ônibus afeta o outro (ligado à demanda) |
+| $N$ | Número de osciladores | Número de ônibus na linha |
+| $\sin(\theta_j - \theta_i)$ | Puxão entre osciladores | Aproxima ou afasta o ônibus $i$ do $j$ |
+
+## Como ler a fórmula {.smaller}
+
+**Em uma frase:** a velocidade de cada ônibus é o seu ritmo natural
+mais a média dos "puxões" que ele recebe dos outros.
+
+:::: {.columns}
+
+::: {.column width="50"}
+**O puxão: $\sin(\theta_j - \theta_i)$**
+
+A fase é a posição do ônibus na volta, de 0 a $2\pi$,
+como o ponteiro de um relógio. O seno vai de −1 a 1,
+e o sinal indica a direção do puxão:
+
+- Outro ônibus **à frente**: seno positivo, este **acelera**
+- Outro ônibus **atrás**: seno negativo, este **desacelera**
+- **Mesma fase**: seno zero, já estão juntos
+
+Nos dois primeiros casos, o efeito é **aproximar** os ônibus.
+O puxão é máximo com um quarto de volta (90°) de diferença.
+:::
+
+::: {.column width="50%"}
+**A força do puxão: $\frac{K}{N}$**
+
+Dividir por $N$ **normaliza** o acoplamento: o puxão total
+não cresce só porque há mais ônibus na linha.
+
+Nos ônibus, $K$ está ligado à **demanda**: quanto mais
+passageiros, mais um atraso se propaga para os outros.
+
+- $K$ **pequeno**: cada ônibus segue seu próprio ritmo
+- $K$ **acima de um valor crítico**: os ônibus **sincronizam**
+:::
+
+::::
+
+## Medindo a sincronização
+
+$$
+r\,e^{i\psi} = \frac{1}{N}\sum_{j=1}^{N} e^{i\theta_j}
+$$
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Imagine cada ônibus como uma **seta** apontando para sua posição no círculo
+- $r$ é o tamanho da **seta média**
+:::
+
+::: {.column width="50%"}
+- $r \approx 0$: ônibus **espalhados** pela rota
+- $r \approx 1$: ônibus **todos juntos**
+:::
+
+::::
+
+<br>
+
+Com dados de GPS, podemos **calcular $r$ ao longo do dia** para cada linha do DF.
+
+## Atenção: nem toda sincronização é ruim
+
+:::: {.columns}
+
+::: {.column width="50%"}
+### Mesma linha: ruim
+
+Ônibus sincronizados andam juntos (*bus bunching*), e o intervalo entre eles aumenta.
+
+O agrupamento persistente pode ser explicado como sincronização de fase quando a demanda passa de um limite crítico [@saw2019bus].
+:::
+
+::: {.column width="50%"}
+### Linhas diferentes: boa
+
+Chegadas coordenadas nos pontos de baldeação reduzem a espera de quem troca de ônibus.
+
+Em paradas ligadas ao metrô, ônibus que "esperam" o pico de passageiros podem reduzir o tempo de espera [@vismara2022].
+:::
+
+::::
+
+::: {.notes}
+Esse slide é fundamental: antecipa a pergunta da banca.
+Nosso objetivo é duplo: DESSINCRONIZAR ônibus da mesma linha
+e SINCRONIZAR linhas diferentes nas baldeações.
+:::
+
+## Adaptações necessárias
+
+::: {.incremental}
+- O modelo clássico supõe que **todos influenciam todos**
+- Nos ônibus, a influência é **local**: cada ônibus é afetado principalmente pelo da frente
+- Linhas do DF **não são circuitos fechados**: há ida, volta e terminais
+- Parte do projeto é **adaptar e calibrar** o modelo com dados reais de Brasília
+:::
+
+# Eixo 2 — Forma urbana
+
+## Frederico de Holanda e a sintaxe espacial
+
+::: {.incremental}
+- Arquiteto e professor da UnB, referência no estudo de Brasília
+- Usa a **sintaxe espacial** [@hillier1984]: a forma da cidade influencia como as pessoas se encontram e circulam
+- Analisa Brasília como uma cidade de **exceção**, marcada por segregação socioespacial [@holanda2002; @holanda2020]
+- Nos ajuda a explicar **por que** a desigualdade de acesso tem essa geografia
+:::
+
+## Imagens de satélite: o território
+
+::: {.incremental}
+- Mostram **onde a cidade cresceu** e com que densidade
+- Permitem comparar a expansão urbana com a **cobertura das linhas de ônibus**
+- Identificam áreas com muita gente e pouco serviço
+- Base para **sugerir melhorias**: novos pontos de integração, corredores, ajustes de linhas
+:::
+
+::: {.notes}
+As imagens não mostram o transporte em si, mostram o território.
+O valor está no cruzamento: território + dados de ônibus + teoria de Frederico de Holanda.
+:::
+
+# Eixo 3 — Dados
+
+## Posição dos ônibus
+
+::: {.incremental}
+- A **Semob-DF** disponibiliza a posição dos ônibus em tempo real, em portais abertos
+- É o mesmo sistema que alimenta o app **DF no Ponto**
+- Mas o feed mostra só a **posição atual**
+- **Solução:** coletar continuamente com um script próprio e montar nosso histórico
+- **Complemento:** solicitar dados históricos à Semob via Lei de Acesso à Informação
+:::
+
+::: {.notes}
+Ponto crítico do cronograma: a coleta precisa começar já no primeiro mês.
+:::
+
+## Rede planejada e território
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Transporte**
+
+- Linhas, horários, itinerários e paradas (Semob-DF)
+- Comparação entre o **planejado** e o **realizado**
+:::
+
+::: {.column width="50%"}
+**Satélite e uso do solo**
+
+- Sentinel-2 e Landsat
+- CBERS-4A (INPE)
+- Ortofotos do Geoportal DF
+- MapBiomas
+:::
+
+::::
+
+## Dados socioeconômicos
+
+::: {.incremental}
+- **Censo 2022** (IBGE): população e renda por área
+- **PDAD** (IPEDF): perfil das regiões administrativas do DF
+- **Projeto Acesso a Oportunidades** (Ipea): estimativas de acessibilidade urbana
+- Métodos de cálculo de acessibilidade com R [@pereira2023]
+:::
+
+# Como tudo se conecta
+
+## Estrutura do projeto
+
+```{mermaid}
+flowchart LR
+  A[GPS dos ônibus] --> B[Modelo de Kuramoto]
+  B --> C[Agrupamento e<br>tempos de espera]
+  D[Imagens de satélite<br>e uso do solo] --> E[Forma urbana<br>Holanda]
+  F[Censo e PDAD] --> G[Perfil<br>socioeconômico]
+  C --> H[Desigualdade de<br>acessibilidade]
+  E --> H
+  G --> H
+  H --> I[Propostas de<br>melhoria]
+```
+
+## Resultados esperados
+
+::: {.incremental}
+- Um **diagnóstico** da sincronização das linhas do DF ao longo do dia
+- Um **mapa** da desigualdade de tempo de espera e acessibilidade
+- **Propostas concretas** de ajuste: espaçamento de linhas e coordenação de baldeações
+- Um **artigo científico** e um repositório reprodutível
+:::
+
+## Referências {.smaller .scrollable}
+
+::: {#refs}
+:::

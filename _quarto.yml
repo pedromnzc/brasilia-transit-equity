@@ -1,0 +1,11 @@
+project:
+  type: default
+  output-dir: outputs/render
+
+lang: pt-BR
+
+bibliography: ABNT/referencias.bib
+csl: ABNT/abnt.csl
+
+execute:
+  freeze: auto

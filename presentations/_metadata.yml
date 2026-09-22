@@ -1,0 +1,5 @@
+format:
+  revealjs:
+    slide-number: true
+    theme: simple
+    embed-resources: true

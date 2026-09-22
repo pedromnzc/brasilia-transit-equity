@@ -1,0 +1,57 @@
+# --- RStudio & Quarto ---
+# Ignora arquivos de sessão em qualquer subdiretório
+**/.Rproj.user/
+**/.Rhistory
+**/.RData
+**/.Ruserdata
+**/*.Rproj
+**/.quarto/
+
+# --- .env ---
+# Bloqueia arquivo .env
+.env
+
+# --- Dados ---
+# Bloqueia arquivos de dados em qualquer pasta 'data', mantendo a estrutura via .gitkeep
+**/data/raw/csv/*
+!**/data/raw/csv/.gitkeep
+
+**/data/raw/xlsx/*
+!**/data/raw/xlsx/.gitkeep
+
+**/data/raw/json/*
+!**/data/raw/json/.gitkeep
+
+**/data/raw/txt/*
+!**/data/raw/txt/.gitkeep
+
+**/data/processed/csv/*
+!**/data/processed/csv/.gitkeep
+
+**/data/processed/xlsx/*
+!**/data/processed/xlsx/.gitkeep
+
+**/data/processed/json/*
+!**/data/processed/json/.gitkeep
+
+**/data/processed/txt/*
+!**/data/processed/txt/.gitkeep
+
+*.csv
+*.xlsx
+*.json
+
+# --- CLAUDE ---
+CLAUDE.md
+
+# --- Saídas ---
+# Bloqueia relatórios gerados em qualquer pasta 'outputs'
+**/outputs/pdf/*
+!**/outputs/pdf/.gitkeep
+
+**/outputs/html/*
+!**/outputs/html/.gitkeep
+.Rproj.user
+
+/.quarto/
+**/*.quarto_ipynb
