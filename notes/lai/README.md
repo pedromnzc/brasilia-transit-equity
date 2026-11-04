@@ -10,7 +10,7 @@ Registro do pedido de acesso à informação feito à Secretaria de Estado de Tr
 | Órgão | SEMOB – Secretaria de Estado de Transporte e Mobilidade do DF |
 | Plataforma | [Participa DF](https://www.participa.df.gov.br) |
 | Data do pedido | 20/10/2026, 14h29 |
-| Situação atual | Recebido |
+| Situação atual | Respondido (atendimento parcial) |
 | Prazo de resposta (estimado) | 09/11/2026 (20 dias) |
 | Prazo com prorrogação (estimado) | 19/11/2026 (+10 dias) |
 
@@ -71,23 +71,57 @@ O período foi escolhido por não conter feriados, recesso escolar, jogos da Cop
 > Atenciosamente,
 > Pedro Muniz Cherulli
 
+## Resposta
+
+A SEMOB enviou só os registros de GPS, em CSV, por link para download. O despacho SEMOB/GAB/ASSAD (processo SEI 00090-00016476/2026-84) devolve o pedido à Ouvidoria depois das manifestações da SUOP (Despacho 217987855) e da SUTINF (Despacho 217998977). Esses dois despachos não vieram junto.
+
+| Item pedido | Situação |
+|---|---|
+| 1. Registros de GPS | Entregue, sem identificação da viagem |
+| 2. GTFS estático | Não enviado e sem justificativa |
+| 3. Metadados | Parcial: a mensagem descreve 5 dos 16 campos; periodicidade e retenção não foram informadas |
+
+### Conferência do CSV
+
+Arquivo `data/raw/posicoesLai.csv` (274 MB), conferido em 04/11/2026.
+
+| Verificação | Resultado |
+|---|---|
+| Registros | 1.940.615, sem `id_posicao` duplicado |
+| Linhas | As 9 pedidas, nenhuma a mais |
+| Período | 17/08 a 31/08/2026 (um dia a mais que o pedido) |
+| Veículos | 858 |
+| Intervalo entre posições | Mediana de 30 s (p25 = 21 s, p75 = 40 s) |
+| Dias sem registro | 2301 em 23/08; 0.306 em 23/08 e 30/08 (domingos) |
+| Campo `sentido` | Na linha 0.385 (operadora 3450) as colunas estão deslocadas: `sentido` traz o horário planejado da viagem e `imei` traz valores como `1,67` |
+| Campos quase vazios | `geom_point` (99,7%), `hora_viagemplanejada` (80,1%), `gtfs_linha` e `turno` (76,8%), `imei` (23,2%) |
+
+Colunas do CSV: `id_posicao`, `id_operadora`, `prefixo`, `datalocal`, `velocidade`, `cd_linha`, `direcao`, `latitude`, `longitude`, `dataregistro`, `geom_point`, `imei`, `sentido`, `hora_viagemplanejada`, `gtfs_linha`, `turno`.
+
+Descrição enviada pela SEMOB: veículo, linha, posição, sentido (`1` = ida, `0` = volta) e `datalocal` (data da posição no GPS no momento da coleta).
+
+### Alternativa ao GTFS
+
+A SEMOB não publica GTFS no site nem no portal de dados abertos, e o DF não aparece na [Mobility Database](https://mobilitydatabase.org).
+
 ## Histórico
 
 | Data | Evento | Observação |
 |---|---|---|
 | 20/10/2026 | Pedido protocolado | Situação: Recebido |
-| | | |
-
+| 23/10/2026 | Despacho SEMOB/GAB/ASSAD | Assinado em 26/10/2026; devolve o pedido à Ouvidoria |
+| 28/10/2026 | Download dos dados de GPS | CSV enviado por link |
 
 ## Arquivos
 
-- `2026-10-20_pedido.pdf` – comprovante de protocolo do Participa DF (e-mail tarjado).
-- `resposta/` – documentos e arquivos enviados pela SEMOB.
+- `2026-10-20_pedido.pdf`: comprovante de protocolo do Participa DF (e-mail tarjado).
+- `Despacho_218014831.pdf`: despacho da SEMOB com o encaminhamento da resposta.
+- `Envio_Dados.txt`: mensagem da SEMOB com o link para os dados (link e e-mail tarjados).
 
 Os dados brutos de GPS não são versionados neste repositório por causa do tamanho. Eles ficam em `data/raw/`, que está no `.gitignore`.
 
 ## Próximos passos
 
-- [ ] Acompanhar o pedido no Participa DF até o prazo.
-- [ ] Ao receber a resposta, conferir se vieram os três itens e a periodicidade do GPS.
-- [ ] Se a resposta for negada ou incompleta, abrir recurso pelo Participa DF citando o protocolo.
+- [x] Acompanhar o pedido no Participa DF até o prazo.
+- [x] Conferir se vieram os três itens e a periodicidade do GPS.
+- [ ] Corrigir o deslocamento de colunas da linha 0.385 no tratamento dos dados.
