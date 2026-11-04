@@ -1,0 +1,4 @@
+Saudações!
+No link xxxxxxxx estão os dados de posição de frota solicitados.
+Os dados estão em formato CSV. Mostram veículo, linha, posição de frota, sentido (1=Ida, 0 = Volta), datalocal é a data da posição no GPS do momento da coleta da coordenada.
+Colocamo-nos à disposição para maiores esclarecimentos. xxxxxxxx@semob.df.gov.br
