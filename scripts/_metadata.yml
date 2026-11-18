@@ -1,0 +1,24 @@
+format:
+  pdf:
+    pdf-engine: xelatex
+    documentclass: scrreprt
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    colorlinks: true
+    linkcolor: blue
+    geometry:
+      - top=2.5cm
+      - bottom=2.5cm
+      - left=3cm
+      - right=3cm
+    header-includes:
+      - \usepackage{fancyhdr}
+      - \pagestyle{fancy}
+      - \fancyhead[L]{Relatório Técnico}
+      - \fancyhead[R]{UniCEUB - PI II}
+      - \fancyfoot[C]{\thepage}
+  
+fontsize: 11pt
+linestretch: 1.3
+mainfont: "TeX Gyre Pagella"

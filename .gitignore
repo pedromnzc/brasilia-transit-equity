@@ -1,57 +1,29 @@
-# --- RStudio & Quarto ---
-# Ignora arquivos de sessão em qualquer subdiretório
-**/.Rproj.user/
-**/.Rhistory
-**/.RData
-**/.Ruserdata
-**/*.Rproj
-**/.quarto/
+# --- RStudio & Quarto & VS Code ---
+*.Rproj
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.quarto/
+_freeze/
+.vscode/
+
+# --- venv ---
+.venv/
 
 # --- .env ---
-# Bloqueia arquivo .env
 .env
+.env.*
+!.env.example
 
-# --- Dados ---
-# Bloqueia arquivos de dados em qualquer pasta 'data', mantendo a estrutura via .gitkeep
-**/data/raw/csv/*
-!**/data/raw/csv/.gitkeep
-
-**/data/raw/xlsx/*
-!**/data/raw/xlsx/.gitkeep
-
-**/data/raw/json/*
-!**/data/raw/json/.gitkeep
-
-**/data/raw/txt/*
-!**/data/raw/txt/.gitkeep
-
-**/data/processed/csv/*
-!**/data/processed/csv/.gitkeep
-
-**/data/processed/xlsx/*
-!**/data/processed/xlsx/.gitkeep
-
-**/data/processed/json/*
-!**/data/processed/json/.gitkeep
-
-**/data/processed/txt/*
-!**/data/processed/txt/.gitkeep
-
-*.csv
-*.xlsx
-*.json
-
-# --- CLAUDE ---
-CLAUDE.md
+# --- Dados (sensíveis) ---
+data/**
+!data/**/
+!data/**/.gitkeep
 
 # --- Saídas ---
-# Bloqueia relatórios gerados em qualquer pasta 'outputs'
-**/outputs/pdf/*
-!**/outputs/pdf/.gitkeep
-
-**/outputs/html/*
-!**/outputs/html/.gitkeep
-.Rproj.user
-
+outputs/**
+!outputs/**/
+!outputs/render/.gitkeep
 /.quarto/
 **/*.quarto_ipynb
