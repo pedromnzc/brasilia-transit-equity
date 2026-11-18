@@ -1,0 +1,152 @@
+---
+title: "Extração e Formatação das Colunas para futura Análise"
+author:
+  - name: "Pedro Muniz Cherulli"
+    affiliation: "UniCEUB - Centro Universitário de Brasília"
+date: today
+date-format: "DD/MM/YYYY"
+---
+
+```{r}
+#| include: false
+
+if (!requireNamespace("here", quietly = TRUE)) install.packages("here")
+raiz <- here::here()
+
+if (!exists("params")) {
+  params <- list(
+    env_name = file.path(raiz, ".venv")
+  )
+}
+
+env_name <- params$env_name
+
+python_path <- system(
+  "py -3.14 -c \"import sys; print(sys.executable)\"",
+  intern = TRUE
+)
+
+Sys.setlocale("LC_TIME", "pt_BR.UTF-8")
+```
+
+```{r}
+#| include: false
+
+if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman")
+
+pacman::p_load(
+  reticulate,
+  knitr,
+  rmarkdown
+)
+
+if (!virtualenv_exists(env_name)) {
+  virtualenv_create(env_name, python = python_path)
+}
+
+use_virtualenv(env_name, required = TRUE)
+
+py_pkgs <- c(
+  "pandas",
+  "pyarrow",
+  "requests"
+)
+
+installed_pkgs <- py_list_packages()$package
+missing_pkgs <- setdiff(py_pkgs, installed_pkgs)
+
+if (length(missing_pkgs) > 0) {
+  py_install(missing_pkgs, pip = TRUE)
+}
+
+reticulate::py_config()
+```
+
+```{python}
+#| echo: false
+
+from pathlib import Path
+import requests
+import pandas as pd
+```
+
+```{python}
+#| echo: false
+
+url_dropbox = "https://www.dropbox.com/scl/fi/tjblzde4aduwsog3t91mr/posicoesLai.csv?rlkey=iunlhq3xeqtmqfh0jkrpd5rpu&dl=1"
+
+raiz_projeto = Path(r.raiz)
+caminho_bruto = raiz_projeto / "data/raw/csv/posicoesLai.csv"
+caminho_limpo = raiz_projeto / "data/processed/parquet/posicoes_limpas.parquet"
+
+operadoras_em_ms = ["3437", "3441", "3450"]  # enviam velocidade em m/s
+operadora_trocada = "3450"                   # grava campos nas colunas erradas
+velocidade_teto = 99.99                      # limite do aparelho, não é medida
+
+# Download (só na primeira vez)
+if not caminho_bruto.exists():
+    caminho_bruto.parent.mkdir(parents=True, exist_ok=True)
+    _ = caminho_bruto.write_bytes(requests.get(url_dropbox).content)  # `_` evita imprimir o tamanho
+
+df = pd.read_csv(caminho_bruto, usecols=[
+        "id_operadora", "prefixo", "cd_linha", "datalocal", "dataregistro",
+        "latitude", "longitude", "velocidade", "sentido", "imei",
+    ],
+    dtype={
+        "id_operadora": str,
+        "prefixo": str,
+        "cd_linha": str,
+        "sentido": str,
+        "imei": str,
+    },
+    parse_dates=["datalocal", "dataregistro"],
+    date_format="%Y-%m-%d %H:%M:%S.%f",
+)
+
+# 1. Remove apenas as mensagens repetidas (mesmo ônibus, horário e lugar)
+df = df.sort_values("dataregistro").drop_duplicates(
+    subset=["prefixo", "datalocal", "latitude", "longitude"]
+)
+
+# 2. Operadora 3450: o sentido está em `velocidade` e a velocidade em `imei`
+eh_operadora_trocada = df["id_operadora"] == operadora_trocada
+
+sentido_informado = pd.to_numeric(df["sentido"].where(~eh_operadora_trocada))
+df["sentido"] = sentido_informado.fillna(df["velocidade"]).astype("Int8")
+
+velocidade_da_3450 = df["imei"].str.replace(",", ".", regex=False)
+df.loc[eh_operadora_trocada, "velocidade"] = pd.to_numeric(
+    velocidade_da_3450[eh_operadora_trocada]
+)
+
+# 3. Velocidade em km/h para todas as operadoras
+eh_velocidade_em_ms = df["id_operadora"].isin(operadoras_em_ms)
+df.loc[eh_velocidade_em_ms, "velocidade"] *= 3.6
+df.loc[df["velocidade"] == velocidade_teto, "velocidade"] = None
+
+# 4. Mantém só as colunas do projeto, com nomes claros
+df = (
+    df.rename(
+        columns={
+            "cd_linha": "linha",
+            "prefixo": "onibus",
+            "id_operadora": "operadora",
+            "datalocal": "data_hora",
+            "velocidade": "velocidade_kmh",
+        }
+    )[["linha", "onibus", "operadora", "data_hora",
+       "latitude", "longitude", "sentido", "velocidade_kmh"]]
+    .sort_values(["linha", "onibus", "data_hora"])
+    .reset_index(drop=True)
+)
+
+caminho_limpo.parent.mkdir(parents=True, exist_ok=True)
+df.to_parquet(caminho_limpo, index=False)
+```
+
+```{python}
+#| echo: false
+
+posicoes = pd.read_parquet(raiz_projeto / "data/processed/parquet/posicoes_limpas.parquet")
+posicoes.head()
+```
